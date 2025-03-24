@@ -50,15 +50,19 @@ func (p *HttpProxy) handleConnect(w http.ResponseWriter, r *http.Request) {
 
 	switch httpAction {
 	case Default:
+		log.Printf("default host %s", host)
 		p.handleTunnel(w, r)
 		return
 	case Forward:
+		log.Printf("Forward host %s", host)
 		p.handleTunnel(w, r)
 		return
 	case Block:
+		log.Printf("Block host %s", host)
 		http.Error(w, "CONNECT requests are not allowed by proxy policy.", http.StatusForbidden)
 		return
 	case ModifiyHeader:
+		log.Printf("ModifiyHeader host %s", host)
 		p.handleMitm(w, r)
 		return
 	}
@@ -153,10 +157,10 @@ func (p *HttpProxy) handleMitm(w http.ResponseWriter, proxyReq *http.Request) {
 	// Configure a new TLS server, pointing it at the client connection, using
 	// our certificate. This server will now pretend being the target.
 	tlsConfig := &tls.Config{
-		PreferServerCipherSuites: true,
-		CurvePreferences:         []tls.CurveID{tls.X25519, tls.CurveP256},
-		MinVersion:               tls.VersionTLS13,
-		Certificates:             []tls.Certificate{tlsCert},
+		PreferServerCipherSuites: false,
+		// CurvePreferences:         []tls.CurveID{tls.X25519, tls.CurveP256},
+		MinVersion:   tls.VersionTLS12,
+		Certificates: []tls.Certificate{tlsCert},
 	}
 
 	tlsConn := tls.Server(clientConn, tlsConfig)

@@ -23,7 +23,7 @@ import (
 // signed by the parent/parentKey certificate. hoursValid is the duration of
 // the new certificate's validity.
 func createCert(dnsNames []string, parent *x509.Certificate, parentKey crypto.PrivateKey, hoursValid int) (cert []byte, priv []byte) {
-	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		log.Fatalf("Failed to generate private key: %v", err)
 	}
