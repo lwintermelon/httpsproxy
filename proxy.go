@@ -157,9 +157,13 @@ func (p *HttpProxy) handleMitm(w http.ResponseWriter, proxyReq *http.Request) {
 	// Configure a new TLS server, pointing it at the client connection, using
 	// our certificate. This server will now pretend being the target.
 	tlsConfig := &tls.Config{
-		PreferServerCipherSuites: false,
-		// CurvePreferences:         []tls.CurveID{tls.X25519, tls.CurveP256},
-		MinVersion:   tls.VersionTLS12,
+		MinVersion:               tls.VersionTLS12,
+		PreferServerCipherSuites: true,
+		CurvePreferences: []tls.CurveID{
+			tls.X25519,
+			tls.CurveP256,
+		},
+		NextProtos:   []string{"http/1.1"},
 		Certificates: []tls.Certificate{tlsCert},
 	}
 
